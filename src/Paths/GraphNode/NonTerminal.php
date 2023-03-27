@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paths\GraphNode;
@@ -7,23 +8,20 @@ use ast\Node;
 use Paths\PartialPath;
 use Paths\Path;
 use Paths\GraphNode;
-use Paths\AST\NameVisitor;
+use Paths\NodeNameVisitor;
 
 class NonTerminal extends GraphNode
 {
-    private array $children;
+    private array $children = [];
 
-    public function __construct(Node $node, ?GraphNode $parent = null)
+    public function setChildren(array $children): void
     {
-        parent::__construct((new NameVisitor())($node), $parent);
+        $this->children = $children;
+    }
 
-        $this->children = array_map(function (mixed $node) use ($parent): GraphNode {
-            if ($node instanceof Node) {
-                return GraphNode::fromASTNode($node);
-            } else {
-                return new Terminal("{$node}", $this);
-            }
-        }, $node->children);
+    public function appendChild(GraphNode $child): void
+    {
+        $this->children[] = $child;
     }
 
     public function isTerminal(): bool
@@ -50,11 +48,13 @@ class NonTerminal extends GraphNode
                 yield $path;
             }
         }
+        /*
         if ($this->parent != null) {
             foreach ($this->parent->allPathsToTerminals($prefix) as $path) {
                 yield $path;
             }
         }
+        */
     }
 
     public function allTerminals(): \Generator

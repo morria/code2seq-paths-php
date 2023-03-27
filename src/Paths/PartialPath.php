@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paths;
@@ -28,7 +29,7 @@ class PartialPath
 
     public function withNonTerminal(NonTerminal $node): PartialPath
     {
-        return new PartialPath($this->source, $this->path + [$node]);
+        return new PartialPath($this->source, array_merge($this->path, [$node]));
     }
 
     public function previousNode(): GraphNode

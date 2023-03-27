@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Paths\AST;
+namespace Paths;
 
 use \ast\Node;
 use Paths\AST\Visitor\KindVisitorImplementation;
 use Paths\AST\Visitor\Element;
 
-class NameVisitor extends KindVisitorImplementation
+class NodeNameVisitor extends KindVisitorImplementation
 {
     /**
      * The fallback implementation for node kinds where the subclass visitor

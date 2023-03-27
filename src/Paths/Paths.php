@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paths;
 
 use ast\Node;
 use Paths\FunctionScanner;
-use Paths\GraphNode;
+use Paths\GraphNodeVisitor;
 
 class Paths
 {
@@ -22,16 +23,17 @@ class Paths
 
         $ast = \ast\parse_file($file_name, $version = 90);
         foreach ((new FunctionScanner())($ast) as $method_ast) {
-            $root = GraphNode::fromASTNode($method_ast);
+            $root = (new GraphNodeVisitor())($method_ast);
             foreach ($root->allTerminals() as $terminal) {
                 foreach ($terminal->allPathsToOtherTerminals() as $path) {
-                    $paths[] = $path;
+                    // $paths[] = $path;
+                    print "$path\n";
                 }
             }
         }
 
         $p = new Paths($paths);
-        print "{$p}\n";
+        print $p->__toString();
 
         return $p;
     }

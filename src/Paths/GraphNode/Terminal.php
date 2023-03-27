@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paths\GraphNode;
@@ -16,10 +17,13 @@ class Terminal extends GraphNode
 
     public function allPathsToOtherTerminals(): \Generator
     {
-        if ($this->parent !== null) {
-            foreach ($this->parent->allPathsToTerminals(new PartialPath($this)) as $path) {
+        $p = $this->parent;
+
+        while ($p != null) {
+            foreach ($p->allPathsToTerminals(new PartialPath($this)) as $path) {
                 yield $path;
             }
+            $p = $p->parent;
         }
     }
 
