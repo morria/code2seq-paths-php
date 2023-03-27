@@ -1,0 +1,14 @@
+{
+    "name": "morria/paths",
+    "description": "Produce paths suitable for use by code2seq",
+    "keywords": [
+        "code2seq"
+    ],
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrew S. Morrison"
+        }
+    ]
+}
