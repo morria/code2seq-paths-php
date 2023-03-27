@@ -10,5 +10,17 @@
         {
             "name": "Andrew S. Morrison"
         }
+    ],
+    "require": {
+        "ext-ast": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Paths\\": "src/Paths"
+        }
+    },
+    "autoload-dev": {},
+    "bin": [
+        "paths"
     ]
 }

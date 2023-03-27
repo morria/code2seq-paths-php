@@ -8,7 +8,7 @@
             "name": "Run paths",
             "type": "php",
             "request": "launch",
-            "program": "${workspaceFolder}/src/paths.php",
+            "program": "${workspaceFolder}/src/exec.php",
             "cwd": "${workspaceFolder}",
             "port": 0,
             "runtimeArgs": [
@@ -19,7 +19,7 @@
                 "XDEBUG_CONFIG": "client_port=${port}"
             },
             "args": [
-                "."
+                "./input.php"
             ]
         },
         {

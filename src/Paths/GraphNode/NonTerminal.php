@@ -48,13 +48,6 @@ class NonTerminal extends GraphNode
                 yield $path;
             }
         }
-        /*
-        if ($this->parent != null) {
-            foreach ($this->parent->allPathsToTerminals($prefix) as $path) {
-                yield $path;
-            }
-        }
-        */
     }
 
     public function allTerminals(): \Generator
