@@ -5,9 +5,9 @@ namespace Paths\AST;
 
 use \ast\Node;
 use Paths\AST\Visitor\KindVisitorImplementation;
-use Paths\AST\MethodVisitor;
+use Paths\AST\Visitor\Element;
 
-class MethodVisitor extends KindVisitorImplementation
+class NameVisitor extends KindVisitorImplementation
 {
     /**
      * The fallback implementation for node kinds where the subclass visitor
@@ -18,11 +18,6 @@ class MethodVisitor extends KindVisitorImplementation
      */
     public function visit(Node $node)
     {
-        return;
-    }
-
-    public function visitFuncDecl(Node $node)
-    {
-        print_r($node);
+        return Element::VISIT_LOOKUP_TABLE[$node->kind];
     }
 }

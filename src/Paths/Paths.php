@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace Paths;
 
 use ast\Node;
-use Paths\AST\Visitor;
+use Paths\FunctionScanner;
+use Paths\GraphNode;
 
 class Paths
 {
@@ -17,16 +18,26 @@ class Paths
 
     static function fromFileName(string $file_name): Paths
     {
-        $visitor = new Visitor();
-        $root_node = \ast\parse_file($file_name, $version = 90);
-        print_r($root_node);
-        $visitor($root_node);
+        $paths = [];
 
-        return new Paths([]);
+        $ast = \ast\parse_file($file_name, $version = 90);
+        foreach ((new FunctionScanner())($ast) as $method_ast) {
+            $root = GraphNode::fromASTNode($method_ast);
+            foreach ($root->allTerminals() as $terminal) {
+                foreach ($terminal->allPathsToOtherTerminals() as $path) {
+                    $paths[] = $path;
+                }
+            }
+        }
+
+        $p = new Paths($paths);
+        print "{$p}\n";
+
+        return $p;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return 'yo';
+        return implode("\n", $this->paths);
     }
 }
