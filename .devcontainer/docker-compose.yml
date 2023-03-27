@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  php-paths-devcontainer:
+    build:
+      context: .
+    image: "morria/php-paths-devcontainer:latest"
+    container_name: "php-paths-devcontainer"
+    volumes:
+      - "..:/workspace:cached"
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"

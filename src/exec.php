@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+namespace Paths;
+
+require_once(__DIR__ . '/bootstrap.php');
+
+use Paths\Scan;
+use Paths\Paths;
+
 $rest_index = 0;
 $opts = getopt('h', ['help'], $rest_index);
 
@@ -20,20 +27,22 @@ EOH;
     exit(0);
 }
 
+if (!\extension_loaded('ast')) {
+    echo <<<EOH
+ERROR: The php-ast extension must be loaded in order to run.
+EOH;
+    exit(1);
+}
+
 $files_and_directories = [];
 if ($rest_index > 0) {
     $rest = array_slice($argv, $rest_index);
     $files_and_directories += $rest;
 }
 
-if (isset($opts['directory'])) {
-    if (is_array($opts['directory'])) {
-        $files_and_directories += $opts['directory'];
-    } else {
-        $files_and_directories += $opts['directory'];
+Scan::filesAndDirectories($files_and_directories, function ($file_name) {
+    if (!\str_ends_with($file_name, '.php')) {
+        return;
     }
-}
-
-
-
-print_r($files_and_directories);
+    $paths = Paths::fromFileName($file_name);
+});
