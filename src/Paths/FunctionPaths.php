@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Paths;
 
+use function \ast\parse_file;
 use Paths\FunctionScanner;
 use Paths\GraphNodeVisitor;
 use Paths\Path;
@@ -32,7 +33,7 @@ class FunctionPaths
      */
     public static function fromFileName(string $file_name): \Generator
     {
-        $ast = \ast\parse_file($file_name, $version = 90);
+        $ast = parse_file($file_name, $version = 90);
         foreach ((new FunctionScanner())($ast) as $function_ast) {
             $function_path = new FunctionPaths($function_ast->children['name'] ?? 'anonymous');
             foreach ((new GraphNodeVisitor())($function_ast)->allTerminals() as $terminal) {

@@ -10,7 +10,7 @@ use Paths\Scan;
 use Paths\FunctionPaths;
 
 $rest_index = 0;
-$opts = getopt('h', ['help'], $rest_index);
+$opts = getopt('h', ['help', 'max-length:', 'seed:'], $rest_index);
 
 if (!is_array($opts) || isset($opts['help'])) {
     echo <<<EOH
@@ -44,6 +44,10 @@ $max_length = $opts['max-length'] ?? $opts['l'] ?? null;
 if ($max_length !== null) {
     $max_length = intval($max_length);
 }
+
+//  -i, --ids
+// Use IDs rather than names for context nodes. Defaults to false.
+// $use_node_ids = $ops['ids'] ?? $opts['i'] ?? false;
 
 $files_and_directories = [];
 if ($rest_index > 0) {

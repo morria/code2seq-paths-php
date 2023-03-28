@@ -8,6 +8,8 @@ error_reporting(E_ALL);
 define('CLASS_DIR', __DIR__ . '../');
 set_include_path(get_include_path() . PATH_SEPARATOR . CLASS_DIR);
 
+ini_set('memory_limit', '10240M');
+
 foreach ([dirname(__DIR__, 1) . '/vendor/autoload.php'] as $file) {
     if (file_exists($file)) {
         $loader = require_once($file);
