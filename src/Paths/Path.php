@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paths;
@@ -9,10 +10,16 @@ class Path
 {
     private Terminal $source;
 
+    /**
+     * @var array<GraphNode>
+     */
     private array $path;
 
     private Terminal $target;
 
+    /**
+     * @param $path array<\Paths\GraphNode\NonTerminal>
+     */
     public function __construct(Terminal $source, array $path, Terminal $target)
     {
         $this->source = $source;
@@ -20,13 +27,36 @@ class Path
         $this->path = $path;
     }
 
+    public function getSource(): Terminal
+    {
+        return $this->source;
+    }
+
+    public function getTarget(): Terminal
+    {
+        return $this->target;
+    }
+
+    /** @return array<\Paths\GraphNode\NonTerminal> */
+    public function getPath(): array
+    {
+        return $this->path;
+    }
+
     public function __toString(): string
     {
         return implode(' ', [
             $this->source->__toString(),
-            implode('|', $this->path),
+            implode(',', $this->path),
             $this->target->__toString(),
         ]);
+    }
 
+    public function targetPathString(): string
+    {
+        return implode(',', [
+            $this->source->__toString(),
+            implode(',', $this->path),
+        ]);
     }
 }

@@ -19,7 +19,7 @@
                 "XDEBUG_CONFIG": "client_port=${port}"
             },
             "args": [
-                "${workspaceFolder}/tests/cases/0007_parameter.php"
+                "${file}"
             ]
         },
         {

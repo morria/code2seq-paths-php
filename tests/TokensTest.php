@@ -56,4 +56,22 @@ final class TokensTest extends TestCase
             ['foo', 'bar', 'qux', 'baz']
         );
     }
+
+    public function testAllCaps(): void
+    {
+        $this->assertEquals(
+            Tokens::fromString('FOO BAR'),
+            ['foo', 'bar']
+        );
+
+        $this->assertEquals(
+            Tokens::fromString('FOO-BAR'),
+            ['foo', 'bar']
+        );
+
+        $this->assertEquals(
+            Tokens::fromString('FOO_BAR'),
+            ['foo', 'bar']
+        );
+    }
 }

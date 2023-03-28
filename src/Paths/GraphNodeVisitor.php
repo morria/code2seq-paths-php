@@ -108,7 +108,8 @@ class GraphNodeVisitor extends KindVisitorImplementation
     {
         $gn = new NonTerminal("Parameter", $this->parent);
 
-        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['type'], $gn));
+        $type = $node->children['type'] ?? null;
+        $gn->appendChild(self::graphNodeFromNodeOrValue($type, $gn));
         $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
 
         // TODO: Default value

@@ -14,7 +14,6 @@ class Terminal extends GraphNode
         return true;
     }
 
-
     /**
      * @return \Generator<\Paths\Path>
      */

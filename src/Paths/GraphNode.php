@@ -27,6 +27,6 @@ abstract class GraphNode
 
     public function __toString(): string
     {
-        return implode(',', Tokens::fromString($this->name));
+        return implode('|', Tokens::fromString($this->name));
     }
 }
