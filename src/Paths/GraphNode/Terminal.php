@@ -23,9 +23,7 @@ class Terminal extends GraphNode
         $parent = $this->parent;
         $prefix = new PartialPath($this);
         while ($parent != null) {
-            foreach ($parent->allPathsToTerminals($prefix) as $path) {
-                yield $path;
-            }
+            yield from $parent->allPathsToTerminals($prefix);
             $prefix = $prefix->withNonTerminal($parent);
             $parent = $parent->parent;
         }

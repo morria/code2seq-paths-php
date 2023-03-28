@@ -13,19 +13,21 @@ use Paths\AST\Visitor\KindVisitorImplementation;
 class GraphNodeVisitor extends KindVisitorImplementation
 {
     private ?GraphNode $parent = null;
+    private bool $use_node_ids;
 
-    public function __construct(GraphNode $parent = null)
+    public function __construct(GraphNode $parent = null, bool $use_node_ids = false)
     {
         $this->parent = $parent;
+        $this->use_node_ids = $use_node_ids;
     }
 
     /**
      * @param $node Node|null|string|int
      */
-    public static function graphNodeFromNodeOrValue(mixed $node, GraphNode $parent): GraphNode
+    public function graphNodeFromNodeOrValue(mixed $node, GraphNode $parent): GraphNode
     {
         if ($node instanceof Node) {
-            return (new GraphNodeVisitor($parent))($node);
+            return (new GraphNodeVisitor($parent, $this->use_node_ids))($node);
         }
         return self::terminalFromNodeOrValue($node, $parent);
     }
@@ -43,6 +45,14 @@ class GraphNodeVisitor extends KindVisitorImplementation
         return new Terminal($name, $parent);
     }
 
+    private function nodeName(Node $node): string
+    {
+        if ($this->use_node_ids) {
+            return strval($node->kind);
+        }
+        return self::ELEMENT_NAMES[$node->kind] ?? 'Unknown';
+    }
+
     /**
      * Default visitor which attempts to create a reasonable GraphNode
      * from the given AST node.
@@ -53,16 +63,16 @@ class GraphNodeVisitor extends KindVisitorImplementation
             return self::terminalFromNodeOrValue($node, $this->parent);
         }
 
-        $gn = new NonTerminal(self::ELEMENT_NAMES[$node->kind] ?? 'Unknown', $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
         foreach ($node->children as $child) {
-            $gn->appendChild(self::graphNodeFromNodeOrValue($child, $gn));
+            $gn->appendChild($this->graphNodeFromNodeOrValue($child, $gn));
         }
         return $gn;
     }
 
     public function visitVar(Node $node): GraphNode
     {
-        $gn = new NonTerminal("Variable", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
         $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'] ?? null, $gn));
         return $gn;
     }
@@ -74,16 +84,16 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitFuncDecl(Node $node): GraphNode
     {
-        $gn = new NonTerminal("Function", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
 
         // $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
 
         foreach ($node->children['params']->children ?? [] as $param) {
-            $gn->appendChild(self::graphNodeFromNodeOrValue($param, $gn));
+            $gn->appendChild($this->graphNodeFromNodeOrValue($param, $gn));
         }
 
         foreach ($node->children['stmts']->children ?? [] as $stmt) {
-            $gn->appendChild(self::graphNodeFromNodeOrValue($stmt, $gn));
+            $gn->appendChild($this->graphNodeFromNodeOrValue($stmt, $gn));
         }
 
         // TODO: Return type
@@ -97,7 +107,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
             return self::terminalFromNodeOrValue('EmptyParameters', $this->parent);
         }
 
-        $gn = new NonTerminal("ParameterList", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
         foreach ($node->children ?? [] as $param) {
             $gn->appendChild((new GraphNodeVisitor($gn))($param));
         }
@@ -106,10 +116,10 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitParam(Node $node): GraphNode
     {
-        $gn = new NonTerminal("Parameter", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
 
         $type = $node->children['type'] ?? null;
-        $gn->appendChild(self::graphNodeFromNodeOrValue($type, $gn));
+        $gn->appendChild($this->graphNodeFromNodeOrValue($type, $gn));
         $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'] ?? null, $gn));
 
         // TODO: Default value
@@ -141,16 +151,16 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitStmtList(Node $node): GraphNode
     {
-        $gn = new NonTerminal("StatementList", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
         foreach ($node->children as $child) {
-            $gn->appendChild(self::graphNodeFromNodeOrValue($child, $gn));
+            $gn->appendChild($this->graphNodeFromNodeOrValue($child, $gn));
         }
         return $gn;
     }
 
     public function visitForeach(Node $node): GraphNode
     {
-        $gn = new NonTerminal("Foreach", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
 
         $expr = $node->children['expr'] ?? null;
         if ($expr instanceof Node) {
@@ -177,7 +187,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitIf(Node $node): GraphNode
     {
-        $gn = new NonTerminal("If", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
 
         foreach ($node->children as $child) {
             $gn->appendChild((new GraphNodeVisitor($gn))($child));
@@ -188,16 +198,16 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitIfElem(Node $node)
     {
-        $gn = new NonTerminal("IfElement", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
 
         $cond = $node->children['cond'] ?? null;
         if ($cond instanceof Node) {
-            $gn->appendChild(self::graphNodeFromNodeOrValue($cond, $gn));
+            $gn->appendChild($this->graphNodeFromNodeOrValue($cond, $gn));
         }
 
         $stmts = $node->children['stmts'] ?? null;
         if ($stmts instanceof Node) {
-            $gn->appendChild(self::graphNodeFromNodeOrValue($stmts, $gn));
+            $gn->appendChild($this->graphNodeFromNodeOrValue($stmts, $gn));
         }
 
         return $gn;
@@ -210,16 +220,16 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitNew(Node $node): GraphNode
     {
-        $gn = new NonTerminal("New", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
 
         $class = $node->children['class'] ?? null;
         if ($class instanceof Node) {
-            $gn->appendChild(self::graphNodeFromNodeOrValue($class, $gn));
+            $gn->appendChild($this->graphNodeFromNodeOrValue($class, $gn));
         }
 
         $args = $node->children['args'] ?? null;
         if ($args instanceof Node && count($args->children) > 0) {
-            $gn->appendChild(self::graphNodeFromNodeOrValue($args, $gn));
+            $gn->appendChild($this->graphNodeFromNodeOrValue($args, $gn));
         }
 
         return $gn;
@@ -227,18 +237,27 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitArgList(Node $node): GraphNode
     {
-        $gn = new NonTerminal("ArgumentList", $this->parent);
+        $gn = new NonTerminal($this->nodeName($node), $this->parent);
         foreach ($node->children as $child) {
-            $gn->appendChild(self::graphNodeFromNodeOrValue($child, $gn));
+            $gn->appendChild($this->graphNodeFromNodeOrValue($child, $gn));
         }
         return $gn;
     }
 
+    private function binaryOpNodeName(Node $node): string
+    {
+        if ($this->use_node_ids) {
+            // TODO: These may collide with `kind` IDs.
+            return strval($node->flags);
+        }
+        return self::BINARY_OP_NAMES[$node->flags] ?? $this->nodeName($node);
+    }
+
     public function visitBinaryOp(Node $node)
     {
-        $gn = new NonTerminal(self::BINARY_OP_NAMES[$node->flags] ?? 'BinaryOp', $this->parent);
-        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['left'] ?? null, $gn));
-        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['right'] ?? null, $gn));
+        $gn = new NonTerminal($this->binaryOpNodeName($node), $this->parent);
+        $gn->appendChild($this->graphNodeFromNodeOrValue($node->children['left'] ?? null, $gn));
+        $gn->appendChild($this->graphNodeFromNodeOrValue($node->children['right'] ?? null, $gn));
         return $gn;
     }
 
@@ -274,8 +293,8 @@ class GraphNodeVisitor extends KindVisitorImplementation
     public const ELEMENT_NAMES = [
         \ast\AST_ARG_LIST => 'ArgList',
         \ast\AST_ARRAY => 'Array',
-        \ast\AST_ARRAY_ELEM => 'ArrayElem',
-        \ast\AST_ARROW_FUNC => 'ArrowFunc',
+        \ast\AST_ARRAY_ELEM => 'ArrayElement',
+        \ast\AST_ARROW_FUNC => 'ArrowFunction',
         \ast\AST_ASSIGN => 'Assign',
         \ast\AST_ASSIGN_OP => 'AssignOp',
         \ast\AST_ASSIGN_REF => 'AssignRef',
@@ -289,8 +308,8 @@ class GraphNodeVisitor extends KindVisitorImplementation
         \ast\AST_CAST => 'Cast',
         \ast\AST_CATCH => 'Catch',
         \ast\AST_CLASS => 'Class',
-        \ast\AST_CLASS_CONST => 'ClassConst',
-        \ast\AST_CLASS_CONST_DECL => 'ClassConstDecl',
+        \ast\AST_CLASS_CONST => 'ClassConstant',
+        \ast\AST_CLASS_CONST_DECL => 'ClassConstantDeclaration',
         \ast\AST_CLASS_CONST_GROUP => 'ClassConstGroup',
         \ast\AST_CLASS_NAME => 'ClassName',
         \ast\AST_CLOSURE => 'Closure',
@@ -309,14 +328,14 @@ class GraphNodeVisitor extends KindVisitorImplementation
         \ast\AST_EXIT => 'Exit',
         \ast\AST_EXPR_LIST => 'ExprList',
         \ast\AST_FOREACH => 'Foreach',
-        \ast\AST_FUNC_DECL => 'FuncDecl',
-        \ast\AST_ISSET => 'Isset',
+        \ast\AST_FUNC_DECL => 'Function',
+        \ast\AST_ISSET => 'IsSet',
         \ast\AST_GLOBAL => 'Global',
         \ast\AST_GROUP_USE => 'GroupUse',
         \ast\AST_IF => 'If',
-        \ast\AST_IF_ELEM => 'IfElem',
-        \ast\AST_INSTANCEOF => 'Instanceof',
-        \ast\AST_MAGIC_CONST => 'MagicConst',
+        \ast\AST_IF_ELEM => 'IfElememnt',
+        \ast\AST_INSTANCEOF => 'InstanceOf',
+        \ast\AST_MAGIC_CONST => 'MagicConstant',
         \ast\AST_MATCH => 'Match',
         \ast\AST_MATCH_ARM => 'MatchArm',
         \ast\AST_MATCH_ARM_LIST => 'MatchArmList',
@@ -328,19 +347,19 @@ class GraphNodeVisitor extends KindVisitorImplementation
         \ast\AST_NEW => 'New',
         \ast\AST_NULLSAFE_METHOD_CALL => 'NullsafeMethodCall',
         \ast\AST_NULLSAFE_PROP => 'NullsafeProp',
-        \ast\AST_PARAM => 'Param',
-        \ast\AST_PARAM_LIST => 'ParamList',
+        \ast\AST_PARAM => 'Parameter',
+        \ast\AST_PARAM_LIST => 'ParameterList',
         \ast\AST_PRE_INC => 'PreInc',
         \ast\AST_PRINT => 'Print',
-        \ast\AST_PROP => 'Prop',
-        \ast\AST_PROP_DECL => 'PropDecl',
-        \ast\AST_PROP_ELEM => 'PropElem',
-        \ast\AST_PROP_GROUP => 'PropGroup',
+        \ast\AST_PROP => 'Property',
+        \ast\AST_PROP_DECL => 'PropertyDecl',
+        \ast\AST_PROP_ELEM => 'PropertyElem',
+        \ast\AST_PROP_GROUP => 'PropertyGroup',
         \ast\AST_RETURN => 'Return',
         \ast\AST_STATIC => 'Static',
         \ast\AST_STATIC_CALL => 'StaticCall',
         \ast\AST_STATIC_PROP => 'StaticProp',
-        \ast\AST_STMT_LIST => 'StmtList',
+        \ast\AST_STMT_LIST => 'StatementList',
         \ast\AST_SWITCH => 'Switch',
         \ast\AST_SWITCH_CASE => 'SwitchCase',
         \ast\AST_SWITCH_LIST => 'SwitchList',
@@ -350,9 +369,9 @@ class GraphNodeVisitor extends KindVisitorImplementation
         \ast\AST_NULLABLE_TYPE => 'NullableType',
         \ast\AST_UNARY_OP => 'UnaryOp',
         \ast\AST_USE => 'Use',
-        \ast\AST_USE_ELEM => 'UseElem',
+        \ast\AST_USE_ELEM => 'UseElement',
         \ast\AST_USE_TRAIT => 'UseTrait',
-        \ast\AST_VAR => 'Var',
+        \ast\AST_VAR => 'Variable',
         \ast\AST_WHILE => 'While',
         \ast\AST_CATCH_LIST => 'CatchList',
         \ast\AST_CLONE => 'Clone',
@@ -365,9 +384,9 @@ class GraphNodeVisitor extends KindVisitorImplementation
         \ast\AST_LABEL => 'Label',
         \ast\AST_METHOD_REFERENCE => 'MethodReference',
         \ast\AST_NAME_LIST => 'NameList',
-        \ast\AST_POST_DEC => 'PostDec',
-        \ast\AST_POST_INC => 'PostInc',
-        \ast\AST_PRE_DEC => 'PreDec',
+        \ast\AST_POST_DEC => 'PostDecrement',
+        \ast\AST_POST_INC => 'PostIncrement',
+        \ast\AST_PRE_DEC => 'PreDecrement',
         \ast\AST_REF => 'Ref',
         \ast\AST_SHELL_EXEC => 'ShellExec',
         \ast\AST_THROW => 'Throw',

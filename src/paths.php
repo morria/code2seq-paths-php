@@ -10,7 +10,7 @@ use Paths\Scan;
 use Paths\FunctionPaths;
 
 $rest_index = 0;
-$opts = getopt('h', ['help', 'max-length:', 'seed:'], $rest_index);
+$opts = getopt('h', ['help', 'max-length:', 'seed:', 'ids'], $rest_index);
 
 if (!is_array($opts) || isset($opts['help'])) {
     echo <<<EOH
@@ -25,6 +25,9 @@ Usage: {$argv[0]} [options] [files...]]
 
  -l LENGTH, --max-length=LENGTH
  The maximum length of a target context. Defaults to unbounded.
+
+ -i, --ids
+ Use IDs rather than names for context nodes. Defaults to false.
  
  ...
  All other options will be treated as file names to
@@ -45,9 +48,7 @@ if ($max_length !== null) {
     $max_length = intval($max_length);
 }
 
-//  -i, --ids
-// Use IDs rather than names for context nodes. Defaults to false.
-// $use_node_ids = $ops['ids'] ?? $opts['i'] ?? false;
+$use_node_ids = isset($opts['ids']) || isset($opts['i']);
 
 $files_and_directories = [];
 if ($rest_index > 0) {
@@ -55,11 +56,11 @@ if ($rest_index > 0) {
     $files_and_directories += $rest;
 }
 
-Scan::filesAndDirectories($files_and_directories, function ($file_name) use ($max_length) {
+Scan::filesAndDirectories($files_and_directories, function ($file_name) use ($max_length, $use_node_ids) {
     if (!\str_ends_with($file_name, '.php')) {
         return;
     }
-    foreach (FunctionPaths::fromFileName($file_name) as $function_paths) {
+    foreach (FunctionPaths::fromFileName($file_name, $use_node_ids) as $function_paths) {
         if ($function_paths->isEmpty()) {
             continue;
         }

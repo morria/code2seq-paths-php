@@ -31,12 +31,12 @@ class FunctionPaths
     /**
      * @return \Generator<FunctionPaths>
      */
-    public static function fromFileName(string $file_name): \Generator
+    public static function fromFileName(string $file_name, bool $use_node_ids = false): \Generator
     {
         $ast = parse_file($file_name, $version = 90);
         foreach ((new FunctionScanner())($ast) as $function_ast) {
             $function_path = new FunctionPaths($function_ast->children['name'] ?? 'anonymous');
-            foreach ((new GraphNodeVisitor())($function_ast)->allTerminals() as $terminal) {
+            foreach ((new GraphNodeVisitor(null, $use_node_ids))($function_ast)->allTerminals() as $terminal) {
                 foreach ($terminal->allPathsToOtherTerminals() as $path) {
                     $function_path->appendPath($path);
                 }

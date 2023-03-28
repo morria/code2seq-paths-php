@@ -48,9 +48,7 @@ class NonTerminal extends GraphNode
             if ($child === $previous_node) {
                 continue;
             }
-            foreach ($child->allPathsToTerminals($prefix) as $path) {
-                yield $path;
-            }
+            yield from $child->allPathsToTerminals($prefix);
         }
     }
 
@@ -62,9 +60,7 @@ class NonTerminal extends GraphNode
     public function allTerminals(): \Generator
     {
         foreach ($this->children as $child) {
-            foreach ($child->allTerminals() as $terminal) {
-                yield $terminal;
-            }
+            yield from $child->allTerminals();
         }
     }
 }
