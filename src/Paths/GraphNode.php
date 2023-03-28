@@ -8,6 +8,7 @@ use \ast\Node;
 use Paths\AST\NameVisitor;
 use Paths\GraphNode\Terminal;
 use Paths\GraphNode\NonTerminal;
+use Paths\Tokens;
 
 
 abstract class GraphNode
@@ -22,15 +23,6 @@ abstract class GraphNode
         $this->parent = $parent;
     }
 
-    public static function fromASTNode(Node $node, ?GraphNode $parent = null)
-    {
-        if (count($node->children) > 0) {
-            return new NonTerminal($node, $parent);
-        } else {
-            return new Terminal((new NameVisitor())($node), $parent);
-        }
-    }
-
     abstract public function isTerminal(): bool;
 
     abstract public function allPathsToTerminals(PartialPath $prefix): \Generator;
@@ -39,6 +31,6 @@ abstract class GraphNode
 
     public function __toString(): string
     {
-        return $this->name;
+        return implode(',', Tokens::fromString($this->name));
     }
 }

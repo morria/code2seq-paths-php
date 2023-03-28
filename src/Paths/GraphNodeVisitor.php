@@ -21,6 +21,15 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $this->parent = $parent;
     }
 
+    public static function graphNodeFromNodeOrValue(mixed $node, GraphNode $parent): GraphNode
+    {
+        if ($node instanceof Node) {
+            return (new GraphNodeVisitor($parent))($node);
+        }
+        return new Terminal("{$node}", $parent);
+    }
+
+
     public function visit(Node $node): GraphNode
     {
         if (count($node->children) == 0) {
@@ -152,32 +161,10 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitIfElem(Node $node)
     {
-        $gn = new NonTerminal("IfElem", $this->parent);
-        $gn->appendChild((new GraphNodeVisitor($gn))($node->children['cond']));
-        $gn->appendChild((new GraphNodeVisitor($gn))($node->children['stmts']));
+        $gn = new NonTerminal("IfElement", $this->parent);
+        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['cond'], $gn));
+        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['stmts'], $gn));
         return $gn;
-    }
-
-
-    /**
-     * Accepts a visitor that differentiates on the kind value
-     * of the AST node.
-     *
-     * NOTE: This was turned into a static method for performance
-     * because it was called extremely frequently.
-     *
-     * @return mixed - The type depends on the subclass of KindVisitor being used.
-     * @suppress PhanUnreferencedPublicMethod Phan's code inlines this, but may be useful for some plugins
-     */
-    public static function acceptNodeAndKindVisitor(Node $node, KindVisitor $visitor)
-    {
-        $fn_name = self::VISIT_LOOKUP_TABLE[$node->kind] ?? null;
-        if (\is_string($fn_name)) {
-            return $visitor->{$fn_name}($node);
-        } else {
-            Debug::printNode($node);
-            throw new AssertionError('All node kinds must match');
-        }
     }
 
     /*

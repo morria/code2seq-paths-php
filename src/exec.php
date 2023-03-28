@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paths;
@@ -44,5 +45,7 @@ Scan::filesAndDirectories($files_and_directories, function ($file_name) {
     if (!\str_ends_with($file_name, '.php')) {
         return;
     }
-    $paths = Paths::fromFileName($file_name);
+    foreach (Paths::fromFileName($file_name) as $path) {
+        print $path . "\n";
+    }
 });

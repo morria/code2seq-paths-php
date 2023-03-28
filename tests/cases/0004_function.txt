@@ -1,0 +1,9 @@
+f function|parameter long
+f function|parameter x
+f function|return|variable x
+long parameter x
+long function f
+long function|return|variable x
+x parameter long
+x function f
+x function|return|variable x
