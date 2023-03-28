@@ -21,7 +21,7 @@
     },
     "autoload-dev": {},
     "bin": [
-        "paths"
+        "bin/paths"
     ],
     "require-dev": {
         "phpunit/phpunit": "^10.0"
