@@ -2,7 +2,7 @@ FROM php:8.2.2-cli
 
 RUN apt-get update --fix-missing
 RUN apt-get install -y software-properties-common
-RUN apt-get install -y git curl vim bash sudo tmux man ack
+RUN apt-get install -y git curl vim bash sudo tmux man ack zip unzip
 
 RUN cd /tmp; git clone https://github.com/nikic/php-ast.git && cd php-ast && phpize && ./configure && make && make install
 # RUN apt-get -y install php-ast

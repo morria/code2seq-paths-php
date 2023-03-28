@@ -24,6 +24,7 @@
         "bin/paths"
     ],
     "require-dev": {
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^10.0",
+        "phan/phan": "^5.4"
     }
 }

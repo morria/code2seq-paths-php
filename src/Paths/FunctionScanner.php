@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paths;
 
 use \ast\Node;
 use Paths\AST\Visitor\KindVisitorImplementation;
-use Paths\AST\MethodVisitor;
 
 class FunctionScanner extends KindVisitorImplementation
 {

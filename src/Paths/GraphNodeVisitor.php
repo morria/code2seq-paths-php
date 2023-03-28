@@ -9,8 +9,6 @@ use Paths\GraphNode;
 use Paths\GraphNode\NonTerminal;
 use Paths\GraphNode\Terminal;
 use Paths\AST\Visitor\KindVisitorImplementation;
-use Paths\AST\Visitor\Element;
-use Paths\NodeNameVisitor;
 
 class GraphNodeVisitor extends KindVisitorImplementation
 {
@@ -50,7 +48,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
     public function visitVar(Node $node): GraphNode
     {
         $gn = new NonTerminal("Variable", $this->parent);
-        $gn->appendChild(new Terminal($node->children['name'], $gn));
+        $gn->appendChild(new Terminal($node->children['name'] ?? '', $gn));
         return $gn;
     }
 
@@ -59,10 +57,10 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $gn = new NonTerminal("Function", $this->parent);
 
         // Name
-        $gn->appendChild(new Terminal($node->children['name'], $gn));
+        $gn->appendChild(new Terminal($node->children['name'] ?? '', $gn));
 
         // Parameters
-        foreach ($node->children['params']->children as $param) {
+        foreach ($node->children['params']->children ?? [] as $param) {
             if ($param instanceof Node) {
                 $gn->appendChild((new GraphNodeVisitor($gn))($param));
             } else {
@@ -74,7 +72,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
         // TODO: ...
 
         // Body
-        foreach ($node->children['stmts']->children as $stmt) {
+        foreach ($node->children['stmts']->children ?? [] as $stmt) {
             $gn->appendChild((new GraphNodeVisitor($gn))($stmt));
         }
 
@@ -86,13 +84,15 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $gn = new NonTerminal("Parameter", $this->parent);
 
         // Type
-        if (isset($node->children['type'])) {
-            $gn->appendChild((new GraphNodeVisitor($gn))($node->children['type']));
+        $type = $node->children['type'] ?? '';
+        if (!empty($type)) {
+            $gn->appendChild((new GraphNodeVisitor($gn))($type));
         }
 
         // Name
-        if (isset($node->children['name'])) {
-            $gn->appendChild(new Terminal($node->children['name'], $gn));
+        $name = $node->children['name'] ?? '';
+        if (!empty($name)) {
+            $gn->appendChild(new Terminal($name, $gn));
         }
 
         // Default
@@ -135,15 +135,26 @@ class GraphNodeVisitor extends KindVisitorImplementation
     public function visitForeach(Node $node): GraphNode
     {
         $gn = new NonTerminal("Foreach", $this->parent);
-        $gn->appendChild((new GraphNodeVisitor($gn))($node->children['expr']));
 
-        $gn->appendChild((new GraphNodeVisitor($gn))($node->children['value']));
-
-        if (isset($node->children['key'])) {
-            $gn->appendChild((new GraphNodeVisitor($gn))($node->children['key']));
+        $expr = $node->children['expr'] ?? null;
+        if ($expr instanceof Node) {
+            $gn->appendChild((new GraphNodeVisitor($gn))($expr));
         }
 
-        $gn->appendChild((new GraphNodeVisitor($gn))($node->children['stmts']));
+        $value = $node->children['value'] ?? null;
+        if ($value instanceof Node) {
+            $gn->appendChild((new GraphNodeVisitor($gn))($value));
+        }
+
+        $key = $node->children['key'] ?? null;
+        if ($key instanceof Node) {
+            $gn->appendChild((new GraphNodeVisitor($gn))($key));
+        }
+
+        $stmts = $node->children['stmts'] ?? null;
+        if ($stmts instanceof Node) {
+            $gn->appendChild((new GraphNodeVisitor($gn))($stmts));
+        }
 
         return $gn;
     }
@@ -162,8 +173,17 @@ class GraphNodeVisitor extends KindVisitorImplementation
     public function visitIfElem(Node $node)
     {
         $gn = new NonTerminal("IfElement", $this->parent);
-        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['cond'], $gn));
-        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['stmts'], $gn));
+
+        $cond = $node->children['cond'] ?? null;
+        if ($cond instanceof Node) {
+            $gn->appendChild(self::graphNodeFromNodeOrValue($cond, $gn));
+        }
+
+        $stmts = $node->children['stmts'] ?? null;
+        if ($stmts instanceof Node) {
+            $gn->appendChild(self::graphNodeFromNodeOrValue($stmts, $gn));
+        }
+
         return $gn;
     }
 

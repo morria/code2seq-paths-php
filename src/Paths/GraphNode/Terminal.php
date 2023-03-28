@@ -15,23 +15,34 @@ class Terminal extends GraphNode
     }
 
 
+    /**
+     * @return \Generator<\Paths\Path>
+     */
     public function allPathsToOtherTerminals(): \Generator
     {
-        $p = $this->parent;
-
-        while ($p != null) {
-            foreach ($p->allPathsToTerminals(new PartialPath($this)) as $path) {
+        $parent = $this->parent;
+        $prefix = new PartialPath($this);
+        while ($parent != null) {
+            foreach ($parent->allPathsToTerminals($prefix) as $path) {
                 yield $path;
             }
-            $p = $p->parent;
+            $prefix = $prefix->withNonTerminal($parent);
+            $parent = $parent->parent;
         }
     }
 
+    /**
+     * @return \Generator<\Paths\Path>
+     * Generate all paths to terminals reachable from this node.
+     */
     public function allPathsToTerminals(PartialPath $prefix): \Generator
     {
         yield $prefix->withTerminal($this);
     }
 
+    /**
+     * @return \Generator<Terminal>
+     */
     public function allTerminals(): \Generator
     {
         yield $this;

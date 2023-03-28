@@ -22,10 +22,10 @@ final class PathsTest extends TestCase
     #[DataProvider('caseProvider')]
     public function testCases($actual_file, $expected_file): void
     {
-        $actual_paths = array_map(function (Path $path): string {
+        $actual_paths = implode("\n", array_map(function (Path $path): string {
             return $path->__toString();
-        }, iterator_to_array(Paths::fromFileName($actual_file)));
-        $expected_paths = file($expected_file);
+        }, iterator_to_array(Paths::fromFileName($actual_file))));
+        $expected_paths = trim(file_get_contents($expected_file));
 
         $this->assertEquals($actual_paths, $expected_paths);
     }

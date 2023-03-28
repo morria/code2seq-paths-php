@@ -163,7 +163,6 @@ class Element
         if (\is_string($fn_name)) {
             return $visitor->{$fn_name}($node);
         } else {
-            Debug::printNode($node);
             throw new AssertionError('All node kinds must match');
         }
     }
@@ -209,8 +208,7 @@ class Element
         if (\is_string($fn_name)) {
             return $visitor->{$fn_name}($node);
         } else {
-            Debug::printNode($node);
-            throw new AssertionError("All flags must match. Found " . self::flagDescription($node));
+            throw new AssertionError("All flags must match.");
         }
     }
 
@@ -240,7 +238,7 @@ class Element
             case flags\CLASS_ANONYMOUS:
                 return $visitor->visitClassAnonymous($this->node);
             default:
-                throw new AssertionError("All flags must match. Found " . self::flagDescription($this->node));
+                throw new AssertionError("All flags must match.");
         }
     }
 
@@ -261,7 +259,7 @@ class Element
             case flags\NAME_RELATIVE:
                 return $visitor->visitNameRelative($this->node);
             default:
-                throw new AssertionError("All flags must match. Found " . self::flagDescription($this->node));
+                throw new AssertionError("All flags must match.");
         }
     }
 
@@ -296,7 +294,7 @@ class Element
             case flags\TYPE_STATIC:
                 return $visitor->visitUnionTypeStatic($this->node);
             default:
-                throw new AssertionError("All flags must match. Found " . self::flagDescription($this->node));
+                throw new AssertionError("All flags must match.");
         }
     }
 
@@ -317,7 +315,7 @@ class Element
             case flags\UNARY_SILENCE:
                 return $visitor->visitUnarySilence($this->node);
             default:
-                throw new AssertionError("All flags must match. Found " . self::flagDescription($this->node));
+                throw new AssertionError("All flags must match.");
         }
     }
 
@@ -342,7 +340,7 @@ class Element
             case flags\EXEC_REQUIRE_ONCE:
                 return $visitor->visitExecRequireOnce($this->node);
             default:
-                throw new AssertionError("All flags must match. Found " . self::flagDescription($this->node));
+                throw new AssertionError("All flags must match.");
         }
     }
 
@@ -373,7 +371,7 @@ class Element
             case flags\MAGIC_TRAIT:
                 return $visitor->visitMagicTrait($this->node);
             default:
-                throw new AssertionError("All flags must match. Found " . self::flagDescription($this->node));
+                throw new AssertionError("All flags must match.");
         }
     }
 
@@ -394,15 +392,7 @@ class Element
             case flags\USE_NORMAL:
                 return $visitor->visitUseNormal($this->node);
             default:
-                throw new AssertionError("All flags must match. Found " . self::flagDescription($this->node));
+                throw new AssertionError("All flags must match.");
         }
-    }
-
-    /**
-     * Helper method to get a tag describing the flags for a given Node kind.
-     */
-    public static function flagDescription(Node $node): string
-    {
-        return Debug::astFlagDescription($node->flags ?? 0, $node->kind);
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Paths;
 
-use ast\Node;
 use Paths\FunctionScanner;
 use Paths\GraphNodeVisitor;
 

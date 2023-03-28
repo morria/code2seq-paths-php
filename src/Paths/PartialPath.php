@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Paths;
 
-use \ast\Node;
 use Paths\Path;
 use Paths\GraphNode;
 use Paths\GraphNode\Terminal;
@@ -32,7 +31,7 @@ class PartialPath
         return new PartialPath($this->source, array_merge($this->path, [$node]));
     }
 
-    public function previousNode(): GraphNode
+    public function lastNode(): GraphNode
     {
         if (empty($this->path)) {
             return $this->source;

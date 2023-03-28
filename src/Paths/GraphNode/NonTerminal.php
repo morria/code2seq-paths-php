@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Paths\GraphNode;
 
-use ast\Node;
 use Paths\PartialPath;
 use Paths\Path;
 use Paths\GraphNode;
-use Paths\NodeNameVisitor;
 
 class NonTerminal extends GraphNode
 {
@@ -34,9 +32,14 @@ class NonTerminal extends GraphNode
         return $this->children;
     }
 
+    /**
+     * @return \Generator<Path>
+     * Generate all paths to all terminals reachable from
+     * this node.
+     */
     public function allPathsToTerminals(PartialPath $prefix): \Generator
     {
-        $previous_node = $prefix->previousNode();
+        $previous_node = $prefix->lastNode();
         $prefix = $prefix->withNonTerminal($this);
 
         foreach ($this->children as $child) {
@@ -50,6 +53,11 @@ class NonTerminal extends GraphNode
         }
     }
 
+    /**
+     * 
+     * @return \Generator<Terminal>
+     * Generate all the terminal nodes reachable from this node
+     */
     public function allTerminals(): \Generator
     {
         foreach ($this->children as $child) {

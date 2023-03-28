@@ -19,7 +19,7 @@
                 "XDEBUG_CONFIG": "client_port=${port}"
             },
             "args": [
-                "{file}"
+                "./a.php"
             ]
         },
         {

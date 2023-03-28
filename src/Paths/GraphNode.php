@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Paths;
 
-use \ast\Node;
-use Paths\AST\NameVisitor;
-use Paths\GraphNode\Terminal;
 use Paths\GraphNode\NonTerminal;
 use Paths\Tokens;
-
 
 abstract class GraphNode
 {
