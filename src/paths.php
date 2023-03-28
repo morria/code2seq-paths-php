@@ -56,6 +56,9 @@ Scan::filesAndDirectories($files_and_directories, function ($file_name) use ($ma
         return;
     }
     foreach (FunctionPaths::fromFileName($file_name) as $function_paths) {
+        if ($function_paths->isEmpty()) {
+            continue;
+        }
         print $function_paths->toString($max_length) . "\n";
     }
 });

@@ -42,6 +42,7 @@ class NonTerminal extends GraphNode
         $previous_node = $prefix->lastNode();
         $prefix = $prefix->withNonTerminal($this);
 
+        // TODO: Only allow forward paths?
         foreach ($this->children as $child) {
             // Skip the node we just popped out of
             if ($child === $previous_node) {
