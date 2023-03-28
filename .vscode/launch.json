@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Paths in open file",
+            "name": "Paths for file",
             "type": "php",
             "request": "launch",
             "program": "${workspaceFolder}/src/paths.php",
@@ -19,6 +19,28 @@
                 "XDEBUG_CONFIG": "client_port=${port}"
             },
             "args": [
+                "${file}"
+            ]
+        },
+        {
+            "name": "Target paths for file",
+            "type": "php",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/target_paths.php",
+            "cwd": "${workspaceFolder}",
+            "port": 0,
+            "runtimeArgs": [
+                "-dxdebug.start_with_request=yes"
+            ],
+            "env": {
+                "XDEBUG_MODE": "debug,develop",
+                "XDEBUG_CONFIG": "client_port=${port}"
+            },
+            "args": [
+                "-s",
+                "42",
+                "-l",
+                "2",
                 "${file}"
             ]
         },

@@ -11,25 +11,37 @@ class TargetPaths
     /**
      * @return array<string, array<Path>>
      */
-    public static function fromPaths(\Generator $paths): array
+    public static function fromPaths(\Generator $paths, ?int $max_length = null, ?int $seed = null): array
     {
-        $target_contexts = [];
+        if ($seed !== null) {
+            srand($seed);
+        }
+
+        $target_paths = [];
         foreach ($paths as $path) {
             $target_name = $path->getTarget()->__toString();
-            if (!isset($target_contexts[$target_name])) {
-                $target_contexts[$target_name] = [];
+            if (!isset($target_paths[$target_name])) {
+                $target_paths[$target_name] = [];
             }
-            $target_contexts[$target_name][] = $path;
+            $target_paths[$target_name][] = $path;
         }
-        return $target_contexts;
+
+        if ($max_length !== null) {
+            foreach ($target_paths as $target => $paths) {
+                shuffle($paths);
+                $target_paths[$target] = array_slice($paths, 0, $max_length);
+            }
+        }
+
+        return $target_paths;
     }
 
     /**
      * @return array<string, array<Path>>
      */
-    public static function fromFileName(string $file_name): array
+    public static function fromFileName(string $file_name, ?int $max_length = null, ?int $seed = null): array
     {
-        return self::fromPaths(Paths::fromFileName($file_name));
+        return self::fromPaths(Paths::fromFileName($file_name), $max_length, $seed);
     }
 
     /**
