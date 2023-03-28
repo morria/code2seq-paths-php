@@ -25,11 +25,13 @@ final class TargetPathsTest extends TestCase
     #[DataProvider('caseProvider')]
     public function testCases($actual_file, $expected_file): void
     {
-        $actual_paths = implode("\n", array_map(function (Path $path): string {
-            return $path->__toString();
-        }, TargetPaths::fromFileName($actual_file)));
-        $expected_paths = trim(file_get_contents($expected_file));
+        $actual_target_paths = [];
+        foreach (TargetPaths::fromFileName($actual_file) as $target => $paths) {
+            $actual_target_paths[] = TargetPaths::serialize(strval($target), $paths);
+        };
 
-        $this->assertEquals($actual_paths, $expected_paths);
+        $expected_target_paths = trim(file_get_contents($expected_file));
+
+        $this->assertEquals(implode("\n", $actual_target_paths), $expected_target_paths);
     }
 }
