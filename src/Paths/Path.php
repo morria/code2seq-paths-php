@@ -11,7 +11,7 @@ class Path
     private Terminal $source;
 
     /**
-     * @var array<GraphNode>
+     * @var array<\Paths\GraphNode\NonTerminal>
      */
     private array $path;
 
@@ -45,18 +45,10 @@ class Path
 
     public function __toString(): string
     {
-        return implode(' ', [
-            $this->source->__toString(),
-            implode(',', $this->path),
-            $this->target->__toString(),
-        ]);
-    }
-
-    public function targetPathString(): string
-    {
         return implode(',', [
             $this->source->__toString(),
-            implode(',', $this->path),
+            implode('|', $this->path),
+            $this->target->__toString(),
         ]);
     }
 }

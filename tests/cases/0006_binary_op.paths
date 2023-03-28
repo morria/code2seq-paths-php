@@ -1,6 +1,0 @@
-f function,return,add 1
-f function,return,add 2
-1 add 2
-1 add,return,function f
-2 add 1
-2 add,return,function f

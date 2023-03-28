@@ -33,7 +33,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
     /**
      * @param $node Node|null|string|int
      */
-    public static function terminalFromNodeOrValue(mixed $node, GraphNode $parent): Terminal
+    public static function terminalFromNodeOrValue(mixed $node, ?GraphNode $parent): Terminal
     {
         if ($node instanceof Node) {
             return new Terminal(self::ELEMENT_NAMES[$node->kind] ?? 'Unknown', $parent);
@@ -63,7 +63,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
     public function visitVar(Node $node): GraphNode
     {
         $gn = new NonTerminal("Variable", $this->parent);
-        $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
+        $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'] ?? null, $gn));
         return $gn;
     }
 
@@ -76,7 +76,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
     {
         $gn = new NonTerminal("Function", $this->parent);
 
-        $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
+        // $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
 
         foreach ($node->children['params']->children ?? [] as $param) {
             $gn->appendChild(self::graphNodeFromNodeOrValue($param, $gn));
@@ -110,7 +110,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
         $type = $node->children['type'] ?? null;
         $gn->appendChild(self::graphNodeFromNodeOrValue($type, $gn));
-        $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
+        $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'] ?? null, $gn));
 
         // TODO: Default value
 
@@ -205,7 +205,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitName(Node $node): GraphNode
     {
-        return self::terminalFromNodeOrValue($node->children['name'], $this->parent);
+        return self::terminalFromNodeOrValue($node->children['name'] ?? null, $this->parent);
     }
 
     public function visitNew(Node $node): GraphNode
@@ -237,8 +237,8 @@ class GraphNodeVisitor extends KindVisitorImplementation
     public function visitBinaryOp(Node $node)
     {
         $gn = new NonTerminal(self::BINARY_OP_NAMES[$node->flags] ?? 'BinaryOp', $this->parent);
-        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['left'], $gn));
-        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['right'], $gn));
+        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['left'] ?? null, $gn));
+        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['right'] ?? null, $gn));
         return $gn;
     }
 

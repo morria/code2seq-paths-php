@@ -6,6 +6,7 @@ namespace Paths\GraphNode;
 
 use Paths\PartialPath;
 use Paths\GraphNode;
+use Paths\Subtokens;
 
 class Terminal extends GraphNode
 {
@@ -45,5 +46,10 @@ class Terminal extends GraphNode
     public function allTerminals(): \Generator
     {
         yield $this;
+    }
+
+    public function __toString(): string
+    {
+        return implode('|', Subtokens::fromString($this->name));
     }
 }
