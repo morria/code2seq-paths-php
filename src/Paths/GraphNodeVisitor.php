@@ -76,21 +76,17 @@ class GraphNodeVisitor extends KindVisitorImplementation
     {
         $gn = new NonTerminal("Function", $this->parent);
 
-        // Name
         $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
 
-        // Parameters
         foreach ($node->children['params']->children ?? [] as $param) {
             $gn->appendChild(self::graphNodeFromNodeOrValue($param, $gn));
         }
 
-        // Return type
-        // TODO: ...
-
-        // Body
         foreach ($node->children['stmts']->children ?? [] as $stmt) {
             $gn->appendChild((new GraphNodeVisitor($gn))($stmt));
         }
+
+        // TODO: Return type
 
         return $gn;
     }
@@ -115,8 +111,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['type'], $gn));
         $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
 
-        // Default
-        // TODO: ...
+        // TODO: Default value
 
         return $gn;
     }
