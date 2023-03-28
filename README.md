@@ -50,3 +50,47 @@ docker pull morria/php-paths
 ...
 ```
 
+## Output Format
+
+The output is structured as follows.
+
+```
+LINE := FUNCTION_NAME WS CONTEXT_LIST;
+
+FUNCTION_NAME := string;
+
+WS := ' ';
+
+CONTEXT_LIST := SOURCE_TERMINAL ',' NODE_LIST ',' TARGET_TERMINAL;
+
+SOURCE_TERMINAL := TOKEN_LIST;
+TARGET_TERMINAL := TOKEN_LIST;
+
+NODE_LIST := NODE
+          | NODE '|' NODE_LIST
+          ;
+
+NODE := string;
+```
+
+For the input code
+
+```php
+<?php
+function f(int $x)
+{
+    return $x;
+}
+```
+
+the following output will be produced
+
+
+```
+f long,parameter,x long,parameter|function|return|variable,x x,parameter,long x,parameter|function|return|variable,x x,variable|return|function|parameter,long x,variable|return|function|parameter,x
+```
+
+
+## Development
+
+To run tests you can run `./bin/test` which will execute all PHPUnit tests.
