@@ -28,13 +28,6 @@ EOH;
     exit(0);
 }
 
-if (!\extension_loaded('ast')) {
-    echo <<<EOH
-ERROR: The php-ast extension must be loaded in order to run.
-EOH;
-    exit(1);
-}
-
 $files_and_directories = [];
 if ($rest_index > 0) {
     $rest = array_slice($argv, $rest_index);

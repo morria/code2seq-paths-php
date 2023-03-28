@@ -11,12 +11,15 @@ use Paths\Paths;
 
 final class PathsTest extends TestCase
 {
-    public static function caseProvider(): \Generator
+    public static function caseProvider(): array
     {
-        foreach (glob(__DIR__ . "/cases/*.php") as $input_file) {
-            $output_file = str_replace(".php", ".txt", $input_file);
-            yield [$input_file, $output_file];
-        }
+        return array_reduce(glob(__DIR__ . "/cases/*.php"), function (array $carry, string $actual_file): array {
+            $carry[$actual_file] = [
+                $actual_file,
+                str_replace(".php", ".txt", $actual_file)
+            ];
+            return $carry;
+        }, []);
     }
 
     #[DataProvider('caseProvider')]

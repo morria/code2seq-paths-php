@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paths;
@@ -16,3 +17,10 @@ foreach ([dirname(__DIR__, 1) . '/vendor/autoload.php'] as $file) {
 
 define('EXIT_SUCCESS', 0);
 define('EXIT_FAILURE', 1);
+
+if (!\extension_loaded('ast')) {
+    echo <<<EOH
+ERROR: The php-ast extension must be loaded in order to run.
+EOH;
+    exit(1);
+}

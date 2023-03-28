@@ -19,28 +19,43 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $this->parent = $parent;
     }
 
+    /**
+     * @param $node Node|null|string|int
+     */
     public static function graphNodeFromNodeOrValue(mixed $node, GraphNode $parent): GraphNode
     {
         if ($node instanceof Node) {
             return (new GraphNodeVisitor($parent))($node);
         }
-        return new Terminal("{$node}", $parent);
+        return self::terminalFromNodeOrValue($node, $parent);
     }
 
+    /**
+     * @param $node Node|null|string|int
+     */
+    public static function terminalFromNodeOrValue(mixed $node, GraphNode $parent): Terminal
+    {
+        if ($node instanceof Node) {
+            return new Terminal(self::ELEMENT_NAMES[$node->kind] ?? 'Unknown', $parent);
+        }
 
+        $name = $node === null ? 'null' : "$node";
+        return new Terminal($name, $parent);
+    }
+
+    /**
+     * Default visitor which attempts to create a reasonable GraphNode
+     * from the given AST node.
+     */
     public function visit(Node $node): GraphNode
     {
         if (count($node->children) == 0) {
-            return new Terminal(self::ELEMENT_NAMES[$node->kind] ?? 'Unknown', $this->parent);
+            return self::terminalFromNodeOrValue($node, $this->parent);
         }
 
         $gn = new NonTerminal(self::ELEMENT_NAMES[$node->kind] ?? 'Unknown', $this->parent);
         foreach ($node->children as $child) {
-            if ($child instanceof Node) {
-                $gn->appendChild((new GraphNodeVisitor($gn))($child));
-            } else {
-                $gn->appendChild(new Terminal("{$child}", $gn));
-            }
+            $gn->appendChild(self::graphNodeFromNodeOrValue($child, $gn));
         }
         return $gn;
     }
@@ -48,8 +63,13 @@ class GraphNodeVisitor extends KindVisitorImplementation
     public function visitVar(Node $node): GraphNode
     {
         $gn = new NonTerminal("Variable", $this->parent);
-        $gn->appendChild(new Terminal($node->children['name'] ?? '', $gn));
+        $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
         return $gn;
+    }
+
+    public function visitMethod(Node $node): GraphNode
+    {
+        return $this->visitFuncDecl($node);
     }
 
     public function visitFuncDecl(Node $node): GraphNode
@@ -57,15 +77,11 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $gn = new NonTerminal("Function", $this->parent);
 
         // Name
-        $gn->appendChild(new Terminal($node->children['name'] ?? '', $gn));
+        $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
 
         // Parameters
         foreach ($node->children['params']->children ?? [] as $param) {
-            if ($param instanceof Node) {
-                $gn->appendChild((new GraphNodeVisitor($gn))($param));
-            } else {
-                $gn->appendChild(new Terminal("{$param}", $gn));
-            }
+            $gn->appendChild(self::graphNodeFromNodeOrValue($param, $gn));
         }
 
         // Return type
@@ -79,21 +95,25 @@ class GraphNodeVisitor extends KindVisitorImplementation
         return $gn;
     }
 
+    public function visitParamList(Node $node): GraphNode
+    {
+        if (count($node->children) == 0) {
+            return self::terminalFromNodeOrValue('EmptyParameters', $this->parent);
+        }
+
+        $gn = new NonTerminal("ParameterList", $this->parent);
+        foreach ($node->children ?? [] as $param) {
+            $gn->appendChild((new GraphNodeVisitor($gn))($param));
+        }
+        return $gn;
+    }
+
     public function visitParam(Node $node): GraphNode
     {
         $gn = new NonTerminal("Parameter", $this->parent);
 
-        // Type
-        $type = $node->children['type'] ?? '';
-        if (!empty($type)) {
-            $gn->appendChild((new GraphNodeVisitor($gn))($type));
-        }
-
-        // Name
-        $name = $node->children['name'] ?? '';
-        if (!empty($name)) {
-            $gn->appendChild(new Terminal($name, $gn));
-        }
+        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['type'], $gn));
+        $gn->appendChild(self::terminalFromNodeOrValue($node->children['name'], $gn));
 
         // Default
         // TODO: ...
@@ -120,7 +140,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
             \ast\flags\TYPE_MIXED => 'mixed',
             \ast\flags\TYPE_NEVER => 'never',
         ];
-        return new Terminal($map[$node->flags] ?? "unknown", $this->parent);
+        return new Terminal($map[$node->flags] ?? "Unknown", $this->parent);
     }
 
     public function visitStmtList(Node $node): GraphNode
@@ -187,36 +207,73 @@ class GraphNodeVisitor extends KindVisitorImplementation
         return $gn;
     }
 
-    /*
+    public function visitName(Node $node): GraphNode
+    {
+        return self::terminalFromNodeOrValue($node->children['name'], $this->parent);
+    }
+
+    public function visitNew(Node $node): GraphNode
+    {
+        $gn = new NonTerminal("New", $this->parent);
+
+        $class = $node->children['class'] ?? null;
+        if ($class instanceof Node) {
+            $gn->appendChild(self::graphNodeFromNodeOrValue($class, $gn));
+        }
+
+        $args = $node->children['args'] ?? null;
+        if ($args instanceof Node && count($args->children) > 0) {
+            $gn->appendChild(self::graphNodeFromNodeOrValue($args, $gn));
+        }
+
+        return $gn;
+    }
+
+    public function visitArgList(Node $node): GraphNode
+    {
+        $gn = new NonTerminal("ArgumentList", $this->parent);
+        foreach ($node->children as $child) {
+            $gn->appendChild(self::graphNodeFromNodeOrValue($child, $gn));
+        }
+        return $gn;
+    }
+
+    public function visitBinaryOp(Node $node)
+    {
+        $gn = new NonTerminal(self::BINARY_OP_NAMES[$node->flags] ?? 'BinaryOp', $this->parent);
+        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['left'], $gn));
+        $gn->appendChild(self::graphNodeFromNodeOrValue($node->children['right'], $gn));
+        return $gn;
+    }
+
     public const BINARY_OP_NAMES = [
         252 => 'BinaryConcat',
-        flags\BINARY_ADD => 'BinaryAdd',
-        flags\BINARY_BITWISE_AND => 'BinaryBitwiseAnd',
-        flags\BINARY_BITWISE_OR => 'BinaryBitwiseOr',
-        flags\BINARY_BITWISE_XOR => 'BinaryBitwiseXor',
-        flags\BINARY_BOOL_XOR => 'BinaryBoolXor',
-        flags\BINARY_CONCAT => 'BinaryConcat',
-        flags\BINARY_DIV => 'BinaryDiv',
-        flags\BINARY_IS_EQUAL => 'BinaryIsEqual',
-        flags\BINARY_IS_IDENTICAL => 'BinaryIsIdentical',
-        flags\BINARY_IS_NOT_EQUAL => 'BinaryIsNotEqual',
-        flags\BINARY_IS_NOT_IDENTICAL => 'BinaryIsNotIdentical',
-        flags\BINARY_IS_SMALLER => 'BinaryIsSmaller',
-        flags\BINARY_IS_SMALLER_OR_EQUAL => 'BinaryIsSmallerOrEqual',
-        flags\BINARY_MOD => 'BinaryMod',
-        flags\BINARY_MUL => 'BinaryMul',
-        flags\BINARY_POW => 'BinaryPow',
-        flags\BINARY_SHIFT_LEFT => 'BinaryShiftLeft',
-        flags\BINARY_SHIFT_RIGHT => 'BinaryShiftRight',
-        flags\BINARY_SPACESHIP => 'BinarySpaceship',
-        flags\BINARY_SUB => 'BinarySub',
-        flags\BINARY_BOOL_AND => 'BinaryBoolAnd',
-        flags\BINARY_BOOL_OR => 'BinaryBoolOr',
-        flags\BINARY_COALESCE => 'BinaryCoalesce',
-        flags\BINARY_IS_GREATER => 'BinaryIsGreater',
-        flags\BINARY_IS_GREATER_OR_EQUAL => 'BinaryIsGreaterOrEqual',
+        \ast\flags\BINARY_ADD => 'Add',
+        \ast\flags\BINARY_BITWISE_AND => 'BitwiseAnd',
+        \ast\flags\BINARY_BITWISE_OR => 'BitwiseOr',
+        \ast\flags\BINARY_BITWISE_XOR => 'BitwiseXor',
+        \ast\flags\BINARY_BOOL_XOR => 'BoolXor',
+        \ast\flags\BINARY_CONCAT => 'Concat',
+        \ast\flags\BINARY_DIV => 'Div',
+        \ast\flags\BINARY_IS_EQUAL => 'IsEqual',
+        \ast\flags\BINARY_IS_IDENTICAL => 'IsIdentical',
+        \ast\flags\BINARY_IS_NOT_EQUAL => 'IsNotEqual',
+        \ast\flags\BINARY_IS_NOT_IDENTICAL => 'IsNotIdentical',
+        \ast\flags\BINARY_IS_SMALLER => 'IsSmaller',
+        \ast\flags\BINARY_IS_SMALLER_OR_EQUAL => 'IsSmallerOrEqual',
+        \ast\flags\BINARY_MOD => 'Mod',
+        \ast\flags\BINARY_MUL => 'Multiply',
+        \ast\flags\BINARY_POW => 'Power',
+        \ast\flags\BINARY_SHIFT_LEFT => 'ShiftLeft',
+        \ast\flags\BINARY_SHIFT_RIGHT => 'ShiftRight',
+        \ast\flags\BINARY_SPACESHIP => 'Spaceship',
+        \ast\flags\BINARY_SUB => 'Subtract',
+        \ast\flags\BINARY_BOOL_AND => 'BoolAnd',
+        \ast\flags\BINARY_BOOL_OR => 'BoolOr',
+        \ast\flags\BINARY_COALESCE => 'Coalesce',
+        \ast\flags\BINARY_IS_GREATER => 'IsGreater',
+        \ast\flags\BINARY_IS_GREATER_OR_EQUAL => 'IsGreaterOrEqual',
     ];
-    */
 
     public const ELEMENT_NAMES = [
         \ast\AST_ARG_LIST => 'ArgList',

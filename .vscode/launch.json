@@ -8,7 +8,7 @@
             "name": "Paths in open file",
             "type": "php",
             "request": "launch",
-            "program": "${workspaceFolder}/src/exec.php",
+            "program": "${workspaceFolder}/src/paths.php",
             "cwd": "${workspaceFolder}",
             "port": 0,
             "runtimeArgs": [
@@ -19,7 +19,7 @@
                 "XDEBUG_CONFIG": "client_port=${port}"
             },
             "args": [
-                "./a.php"
+                "${workspaceFolder}/tests/cases/0007_parameter.php"
             ]
         },
         {
