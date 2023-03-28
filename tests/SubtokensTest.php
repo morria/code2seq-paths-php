@@ -5,14 +5,14 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 1) . '/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use Paths\Tokens;
+use Paths\Subtokens;
 
-final class TokensTest extends TestCase
+final class SubtokensTest extends TestCase
 {
     public function testEmpty(): void
     {
         $this->assertEquals(
-            Tokens::fromString(''),
+            Subtokens::fromString(''),
             []
         );
     }
@@ -20,7 +20,7 @@ final class TokensTest extends TestCase
     public function testWhitespace(): void
     {
         $this->assertEquals(
-            Tokens::fromString('foo bar'),
+            Subtokens::fromString('foo bar'),
             ['foo', 'bar']
         );
     }
@@ -28,7 +28,7 @@ final class TokensTest extends TestCase
     public function testCamelCase(): void
     {
         $this->assertEquals(
-            Tokens::fromString('fooBar'),
+            Subtokens::fromString('fooBar'),
             ['foo', 'bar']
         );
     }
@@ -36,7 +36,7 @@ final class TokensTest extends TestCase
     public function testKebabCase(): void
     {
         $this->assertEquals(
-            Tokens::fromString('foo-bar'),
+            Subtokens::fromString('foo-bar'),
             ['foo', 'bar']
         );
     }
@@ -44,7 +44,7 @@ final class TokensTest extends TestCase
     public function testSnakeCase(): void
     {
         $this->assertEquals(
-            Tokens::fromString('foo_bar'),
+            Subtokens::fromString('foo_bar'),
             ['foo', 'bar']
         );
     }
@@ -52,7 +52,7 @@ final class TokensTest extends TestCase
     public function testNormalize(): void
     {
         $this->assertEquals(
-            Tokens::fromString('Foo-bar    Qux_baz'),
+            Subtokens::fromString('Foo-bar    Qux_baz'),
             ['foo', 'bar', 'qux', 'baz']
         );
     }
@@ -60,17 +60,17 @@ final class TokensTest extends TestCase
     public function testAllCaps(): void
     {
         $this->assertEquals(
-            Tokens::fromString('FOO BAR'),
+            Subtokens::fromString('FOO BAR'),
             ['foo', 'bar']
         );
 
         $this->assertEquals(
-            Tokens::fromString('FOO-BAR'),
+            Subtokens::fromString('FOO-BAR'),
             ['foo', 'bar']
         );
 
         $this->assertEquals(
-            Tokens::fromString('FOO_BAR'),
+            Subtokens::fromString('FOO_BAR'),
             ['foo', 'bar']
         );
     }

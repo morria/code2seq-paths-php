@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Paths;
 
-final class Tokens
+final class Subtokens
 {
 
     /**

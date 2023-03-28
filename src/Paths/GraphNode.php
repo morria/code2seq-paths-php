@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Paths;
 
 use Paths\GraphNode\NonTerminal;
-use Paths\Tokens;
+use Paths\Subtokens;
 
 abstract class GraphNode
 {
@@ -27,6 +27,6 @@ abstract class GraphNode
 
     public function __toString(): string
     {
-        return implode('|', Tokens::fromString($this->name));
+        return implode('|', Subtokens::fromString($this->name));
     }
 }
