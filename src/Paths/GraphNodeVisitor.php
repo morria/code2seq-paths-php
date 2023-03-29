@@ -24,7 +24,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
     /**
      * @param $node Node|null|string|int
      */
-    public function graphNodeFromNodeOrValue(mixed $node, GraphNode $parent): GraphNode
+    public function graphNodeFromNodeOrValue($node, GraphNode $parent): GraphNode
     {
         if ($node instanceof Node) {
             return (new GraphNodeVisitor($parent, $this->use_node_ids))($node);
@@ -35,7 +35,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
     /**
      * @param $node Node|null|string|int
      */
-    public static function terminalFromNodeOrValue(mixed $node, ?GraphNode $parent): Terminal
+    public static function terminalFromNodeOrValue($node, ?GraphNode $parent): Terminal
     {
         if ($node instanceof Node) {
             return new Terminal(self::ELEMENT_NAMES[$node->kind] ?? 'Unknown', $parent);

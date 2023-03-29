@@ -57,7 +57,7 @@ if ($rest_index > 0) {
 }
 
 Scan::filesAndDirectories($files_and_directories, function ($file_name) use ($max_length, $use_node_ids) {
-    if (!\str_ends_with($file_name, '.php')) {
+    if ('php' !== pathinfo($file_name, PATHINFO_EXTENSION)) {
         return;
     }
     foreach (FunctionPaths::fromFileName($file_name, $use_node_ids) as $function_paths) {
