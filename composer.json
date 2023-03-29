@@ -1,6 +1,6 @@
 {
-    "name": "morria/paths",
-    "description": "Produce paths suitable for use by code2seq",
+    "name": "morria/code2seq-paths-php",
+    "description": "Produce function paths suitable for use by code2seq",
     "keywords": [
         "code2seq"
     ],

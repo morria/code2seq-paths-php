@@ -1,4 +1,4 @@
-# PHP Paths
+# PHP Code2Seq Paths
 
 Read PHP source code and produce a file suitable for use by [code2seq](http://code2seq.org)
 for training and evaluating a model.
@@ -12,7 +12,7 @@ container with all dependencies defined in `.devcontainer`.
 Once built you can run the tool via
 
 ```
-./bin/paths path/to/php/dir > method_contexts.c2s
+./bin/code2seq-paths path/to/php/dir > method_contexts.c2s
 ```
 
 and from here you can use the file `method_contexts.c2s` as input to [code2seq](https://github.com/tech-srl/code2seq).
@@ -23,10 +23,10 @@ Keep in mind that the file produced here will need to be preprocessed within `co
 
 ## Flags
 
-You can see the available flags via `./bin/paths --help`.
+You can see the available flags via `./bin/code2seq-paths --help`.
 
 ```
-Usage: ./bin/paths [options] [files...]]
+Usage: ./bin/code2seq-paths [options] [files...]]
  -h, --help
  Get this help information
 
@@ -49,7 +49,7 @@ Usage: ./bin/paths [options] [files...]]
 **TODO**: Describe how to run from a docker container.
 
 ```
-docker pull morria/php-paths
+docker pull morria/code2seq-paths-php
 ...
 ```
 
@@ -91,6 +91,28 @@ the following output will be produced
 
 ```
 f long,parameter,x long,parameter|function|return|variable,x x,parameter,long x,parameter|function|return|variable,x x,variable|return|function|parameter,long x,variable|return|function|parameter,x
+```
+
+## Dependencies
+
+To run `code2seq-paths` you'll need to have several dependencies installed on your system.
+
+* [PHP 7+](https://php.net)
+* [php-ast extension](https://github.com/nikic/php-ast)
+* [Composer](https://get-composer.org)
+
+These can be installed on Ubuntu machines via
+
+```
+sudo apt-get install php php-ast composer
+```
+
+Alternatively you can use the `.devcontainer/Dockerfile` to build
+a system suitable for running `code2seq-paths`.
+
+```
+cd .devcontainer
+docker compose build
 ```
 
 
