@@ -5,7 +5,9 @@ for training and evaluating a model.
 
 ## Usage
 
-To build the package just run `composer install`.
+To build the package just run `composer install`. Make sure you have PHP installed along with
+the [php-ast](https://github.com/nikic/php-ast) extension. You can also use the Docker
+container with all dependencies defined in `.devcontainer`.
 
 Once built you can run the tool via
 
@@ -17,6 +19,7 @@ and from here you can use the file `method_contexts.c2s` as input to [code2seq](
 Keep in mind that the file produced here will need to be preprocessed within `code2seq`.
 
 **TODO**: describe how to do that.
+
 
 ## Flags
 
