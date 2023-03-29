@@ -1,8 +1,8 @@
 {
-	"name": "code2seq-paths-php",
+	"name": "code2seq-paths-php-dev",
 	"dockerComposeFile": [
 		"docker-compose.yml"
 	],
-	"service": "code2seq-paths-php",
-    "workspaceFolder": "/workspace"
+	"service": "code2seq-paths-php-dev",
+	"workspaceFolder": "/workspace"
 }
