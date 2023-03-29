@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 1) . '/vendor/autoload.php';
+require_once dirname(__DIR__, 1) . '/src/bootstrap.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

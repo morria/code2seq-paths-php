@@ -22,7 +22,7 @@
     },
     "autoload-dev": {},
     "bin": [
-        "bin/paths",
+        "bin/code2seq-paths",
         "bin/targets"
     ],
     "require-dev": {
