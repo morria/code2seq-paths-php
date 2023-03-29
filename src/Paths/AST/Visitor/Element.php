@@ -51,10 +51,7 @@ class Element
         ast\AST_BINARY_OP => 'visitBinaryOp',
         ast\AST_BREAK => 'visitBreak',
         ast\AST_CALL => 'visitCall',
-        // n.b.: in support of PHP <8.1 we use the numeric value of the constant here
-        //       since `Closure::fromCallable` doesn't exist yet.
-        // ast\AST_CALLABLE_CONVERT => 'visitCallableConvert',
-        3 => 'visitCallableConvert',
+        ast\AST_CALLABLE_CONVERT => 'visitCallableConvert',
         ast\AST_CAST => 'visitCast',
         ast\AST_CATCH => 'visitCatch',
         ast\AST_CLASS => 'visitClass',
@@ -74,9 +71,7 @@ class Element
         ast\AST_ECHO => 'visitEcho',
         ast\AST_EMPTY => 'visitEmpty',
         ast\AST_ENCAPS_LIST => 'visitEncapsList',
-        // n.b.: in support of PHP <8.1 we use the numeric value of the constant here
-        // ast\AST_ENUM_CASE => 'visitEnumCase',
-        1026 => 'visitEnumCase',
+        ast\AST_ENUM_CASE => 'visitEnumCase',
         ast\AST_EXIT => 'visitExit',
         ast\AST_EXPR_LIST => 'visitExprList',
         ast\AST_FOREACH => 'visitForeach',
@@ -116,9 +111,7 @@ class Element
         ast\AST_SWITCH_CASE => 'visitSwitchCase',
         ast\AST_SWITCH_LIST => 'visitSwitchList',
         ast\AST_TYPE => 'visitType',
-        // n.b.: in support of PHP <8.1 we use the numeric value of the constant here
-        // ast\AST_TYPE_INTERSECTION => 'visitTypeIntersection',
-        145 => 'visitTypeIntersection',
+        ast\AST_TYPE_INTERSECTION => 'visitTypeIntersection',
         ast\AST_TYPE_UNION => 'visitTypeUnion',
         ast\AST_NULLABLE_TYPE => 'visitNullableType',
         ast\AST_UNARY_OP => 'visitUnaryOp',
