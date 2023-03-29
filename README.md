@@ -46,11 +46,19 @@ Usage: ./bin/code2seq-paths [options] [files...]]
 
 ## Docker
 
-**TODO**: Describe how to run from a docker container.
+To avoid setting up a proper environment, you can run `code2seq-paths-php` from
+a Docker image as follows.
 
 ```
 docker pull morria/code2seq-paths-php
-...
+docker run --name code2seq-paths-php --volume PATH_TO_SOURCE:/workspace morria/code2seq-paths-php /workspace/
+```
+
+To build the container from source run the following.
+
+```
+composer install
+docker build -t morria/code2seq-paths-php .
 ```
 
 ## Output Format

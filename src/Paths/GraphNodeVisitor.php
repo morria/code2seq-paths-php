@@ -129,24 +129,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
     public function visitType(Node $node): GraphNode
     {
-        $map = [
-            \ast\flags\TYPE_ARRAY => 'array',
-            \ast\flags\TYPE_BOOL => 'bool',
-            \ast\flags\TYPE_CALLABLE => 'callable',
-            \ast\flags\TYPE_DOUBLE => 'double',
-            \ast\flags\TYPE_ITERABLE  => 'iterable',
-            \ast\flags\TYPE_LONG => 'long',
-            \ast\flags\TYPE_NULL => 'null',
-            \ast\flags\TYPE_OBJECT => 'object',
-            \ast\flags\TYPE_STRING => 'string',
-            \ast\flags\TYPE_VOID => 'void',
-            \ast\flags\TYPE_FALSE => 'false',
-            \ast\flags\TYPE_TRUE => 'true',
-            \ast\flags\TYPE_STATIC => 'static',
-            \ast\flags\TYPE_MIXED => 'mixed',
-            \ast\flags\TYPE_NEVER => 'never',
-        ];
-        return new Terminal($map[$node->flags] ?? "Unknown", $this->parent);
+        return new Terminal(self::FLAG_TYPE_NAMES[$node->flags] ?? "Unknown", $this->parent);
     }
 
     public function visitStmtList(Node $node): GraphNode
@@ -260,6 +243,24 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $gn->appendChild($this->graphNodeFromNodeOrValue($node->children['right'] ?? null, $gn));
         return $gn;
     }
+
+    public const FLAG_TYPE_NAMES = [
+        \ast\flags\TYPE_ARRAY => 'array',
+        \ast\flags\TYPE_BOOL => 'bool',
+        \ast\flags\TYPE_CALLABLE => 'callable',
+        \ast\flags\TYPE_DOUBLE => 'double',
+        \ast\flags\TYPE_ITERABLE  => 'iterable',
+        \ast\flags\TYPE_LONG => 'long',
+        \ast\flags\TYPE_NULL => 'null',
+        \ast\flags\TYPE_OBJECT => 'object',
+        \ast\flags\TYPE_STRING => 'string',
+        \ast\flags\TYPE_VOID => 'void',
+        \ast\flags\TYPE_FALSE => 'false',
+        \ast\flags\TYPE_TRUE => 'true',
+        \ast\flags\TYPE_STATIC => 'static',
+        \ast\flags\TYPE_MIXED => 'mixed',
+        \ast\flags\TYPE_NEVER => 'never',
+    ];
 
     public const BINARY_OP_NAMES = [
         252 => 'BinaryConcat',
