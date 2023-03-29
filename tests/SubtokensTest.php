@@ -74,4 +74,43 @@ final class SubtokensTest extends TestCase
             ['foo', 'bar']
         );
     }
+
+    public function testWhitespaceCollapse(): void {
+        $this->assertEquals(
+            Subtokens::fromString('foo  bar'),
+            ['foo', 'bar']
+        );
+
+        $this->assertEquals(
+            Subtokens::fromString("foo\tbar"),
+            ['foo', 'bar']
+        );
+
+        $this->assertEquals(
+            Subtokens::fromString("foo\t\tbar"),
+            ['foo', 'bar']
+        );
+
+        $this->assertEquals(
+            Subtokens::fromString(" foo\t\tbar   "),
+            ['foo', 'bar']
+        );
+    }
+
+    public function testSpecialCharacters(): void {
+        $this->assertEquals(
+            Subtokens::fromString("' foo"),
+            ['quote', 'foo']
+        );
+
+        $this->assertEquals(
+            Subtokens::fromString("'foo' bar"),
+            ['quotefooquote', 'bar']
+        );
+
+        $this->assertEquals(
+            Subtokens::fromString(", | \\ \" '"),
+            ['comma', 'pipe', 'slash', 'quote', 'quote']
+        );
+    }
 }
