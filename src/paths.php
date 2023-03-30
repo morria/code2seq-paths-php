@@ -72,7 +72,7 @@ Scan::filesAndDirectories($files_and_directories, $exclude_files_and_directories
     if ('php' !== pathinfo($file_name, PATHINFO_EXTENSION)) {
         return;
     }
-    foreach (FunctionPaths::fromFileName($file_name, $use_node_ids) as $function_paths) {
+    foreach (FunctionPaths::fromFileName($file_name, $use_node_ids, $max_length) as $function_paths) {
         if ($function_paths->isEmpty()) {
             continue;
         }
