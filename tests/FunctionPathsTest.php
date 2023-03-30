@@ -24,9 +24,9 @@ final class FunctionPathsTest extends TestCase
     #[DataProvider('caseProvider')]
     public function testCases($actual_file, $expected_file): void
     {
-        $actual_paths = implode("\n", array_map(function (FunctionPaths $path): string {
+        $actual_paths = implode("\n", array_filter(array_map(function (FunctionPaths $path): string {
             return $path->toString();
-        }, iterator_to_array(FunctionPaths::fromFileName($actual_file))));
+        }, iterator_to_array(FunctionPaths::fromFileName($actual_file)))));
         $expected_paths = trim(file_get_contents($expected_file));
 
         $this->assertEquals($actual_paths, $expected_paths);

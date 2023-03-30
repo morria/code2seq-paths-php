@@ -64,6 +64,7 @@ Scan::filesAndDirectories($files_and_directories, function ($file_name) use ($ma
         if ($function_paths->isEmpty()) {
             continue;
         }
+        // print(memory_get_usage()/1024/1024 . " " . memory_get_peak_usage()/1024/1024 . "\n");
         print $function_paths->toString($max_length) . "\n";
     }
 });

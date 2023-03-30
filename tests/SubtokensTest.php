@@ -37,7 +37,8 @@ final class SubtokensTest extends TestCase
     {
         $this->assertEquals(
             Subtokens::fromString('foo-bar'),
-            ['foo', 'bar']
+            ['foo', 'bar'],
+            'this'
         );
     }
 
@@ -111,6 +112,11 @@ final class SubtokensTest extends TestCase
         $this->assertEquals(
             Subtokens::fromString(", | \\ \" '"),
             ['comma', 'pipe', 'slash', 'quote', 'quote']
+        );
+
+        $this->assertEquals(
+            Subtokens::fromString('aAÂ'),
+            ['a', 'a']
         );
     }
 }

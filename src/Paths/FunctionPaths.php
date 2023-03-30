@@ -54,11 +54,11 @@ class FunctionPaths
     public function toString(?int $max_length = null): string
     {
         if ($this->isEmpty()) {
-            return $this->function_name;
+            return '';
         }
 
         $paths = $this->paths;
-        if ($max_length !== null) {
+        if ($max_length !== null && count($paths) > $max_length) {
             shuffle($paths);
             $paths = array_slice($paths, 0, $max_length);
         }

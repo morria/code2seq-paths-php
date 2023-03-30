@@ -21,13 +21,18 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $this->use_node_ids = $use_node_ids;
     }
 
+    public function newGraphNodeVisitorWithParent(GraphNode $parent = null)
+    {
+        return new GraphNodeVisitor($parent, $this->use_node_ids);
+    }
+
     /**
      * @param $node Node|null|string|int
      */
     public function graphNodeFromNodeOrValue($node, GraphNode $parent): GraphNode
     {
         if ($node instanceof Node) {
-            return (new GraphNodeVisitor($parent, $this->use_node_ids))($node);
+            return $this->newGraphNodeVisitorWithParent($parent)($node);
         }
         return self::terminalFromNodeOrValue($node, $parent);
     }
@@ -109,7 +114,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
         $gn = new NonTerminal($this->nodeName($node), $this->parent);
         foreach ($node->children ?? [] as $param) {
-            $gn->appendChild((new GraphNodeVisitor($gn))($param));
+            $gn->appendChild($this->newGraphNodeVisitorWithParent($gn)($param));
         }
         return $gn;
     }
@@ -147,22 +152,22 @@ class GraphNodeVisitor extends KindVisitorImplementation
 
         $expr = $node->children['expr'] ?? null;
         if ($expr instanceof Node) {
-            $gn->appendChild((new GraphNodeVisitor($gn))($expr));
+            $gn->appendChild($this->newGraphNodeVisitorWithParent($gn)($expr));
         }
 
         $value = $node->children['value'] ?? null;
         if ($value instanceof Node) {
-            $gn->appendChild((new GraphNodeVisitor($gn))($value));
+            $gn->appendChild($this->newGraphNodeVisitorWithParent($gn)($value));
         }
 
         $key = $node->children['key'] ?? null;
         if ($key instanceof Node) {
-            $gn->appendChild((new GraphNodeVisitor($gn))($key));
+            $gn->appendChild($this->newGraphNodeVisitorWithParent($gn)($key));
         }
 
         $stmts = $node->children['stmts'] ?? null;
         if ($stmts instanceof Node) {
-            $gn->appendChild((new GraphNodeVisitor($gn))($stmts));
+            $gn->appendChild($this->newGraphNodeVisitorWithParent($gn)($stmts));
         }
 
         return $gn;
@@ -173,7 +178,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $gn = new NonTerminal($this->nodeName($node), $this->parent);
 
         foreach ($node->children as $child) {
-            $gn->appendChild((new GraphNodeVisitor($gn))($child));
+            $gn->appendChild($this->newGraphNodeVisitorWithParent($gn)($child));
         }
 
         return $gn;

@@ -12,10 +12,15 @@ final class Subtokens
      */
     public static function fromString(string $string): array
     {
+
+        // Replace special characters
         $string = str_replace([',', '|', '\\', '"', "'"], ['comma', 'pipe', 'slash', 'quote', "quote"], $string);
 
         // Collapse whitespace
         $string = trim(preg_replace('/\s+/', ' ', $string));
+
+        // Remove non-ascii
+        $string = preg_replace('/[[:^print:]]/', '', $string);
 
         // Replace all-caps `FOO` with `Foo`.
         $string = preg_replace_callback('/([A-Z])([A-Z]+)/', function ($matches) {
