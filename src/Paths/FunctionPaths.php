@@ -32,19 +32,21 @@ class FunctionPaths
         if ($this->sample_rate === null) {
             $this->paths[] = $path;
         } else {
-            if (rand(0, 1000) / 1000.0 >= $this->sample_rate) {
+            if (rand(0, 1000) / 1000.0 <= $this->sample_rate) {
                 $this->paths[] = $path;
             }
         }
 
         // Once we break 2x the max paths, randomly cut it in half and start
         // sampling at 50%
-        if ($this->sample_rate === null && $this->max_length !== null) {
-            if (count($this->paths) > (2 * $this->max_length)) {
-                // Set a sample rate of 50%
-                $this->sample_rate = 0.5;
+        if ($this->max_length !== null) {
+            if (count($this->paths) == (2 * $this->max_length)) {
+                // Cut the sample rate in half
+                $this->sample_rate = ($this->sample_rate ?? 1.0) / 2.0;
 
-                // Trim off a random 50% of existing paths
+                // Trim off a random 50% of existing paths. This will
+                // produce the same fair distribution as if the sample
+                // rate had been it's current value from the beginning.
                 $paths = $this->paths;
                 shuffle($paths);
                 $this->paths = array_values(array_slice($paths, 0, $this->max_length));
