@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Paths;
@@ -8,9 +9,14 @@ final class Scan
     /**
      * 
      */
-    static function filesAndDirectories(array $files_and_directories, callable $callable): void
+    static function filesAndDirectories(array $files_and_directories, array $exclude_files_and_directories, callable $callable): void
     {
         foreach ($files_and_directories as $file_or_directory) {
+            foreach ($exclude_files_and_directories as $exclude_file_or_directory) {
+                if (strpos($file_or_directory, $exclude_file_or_directory) !== false) {
+                    continue 2;
+                }
+            }
             self::fileOrDirectory($file_or_directory, $callable);
         }
     }

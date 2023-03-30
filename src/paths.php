@@ -10,7 +10,7 @@ use Paths\Scan;
 use Paths\FunctionPaths;
 
 $rest_index = 0;
-$opts = getopt('h', ['help', 'max-length:', 'seed:', 'ids'], $rest_index);
+$opts = getopt('hl:s:ie:', ['help', 'max-length:', 'seed:', 'ids', 'exclude:'], $rest_index);
 
 if (!is_array($opts) || isset($opts['help'])) {
     echo <<<EOH
@@ -28,6 +28,9 @@ Usage: {$argv[0]} [options] [files...]]
 
  -i, --ids
  Use IDs rather than names for context nodes. Defaults to false.
+
+ -e PATH, --exclude=PATH
+ Exclude the file or directory at the given path from being scanned.
  
  ...
  All other options will be treated as file names to
@@ -50,13 +53,22 @@ if ($max_length !== null) {
 
 $use_node_ids = isset($opts['ids']) || isset($opts['i']);
 
+$exclude_files_and_directories = array_merge(
+    isset($opts['exclude'])
+        ? (is_array($opts['exclude']) ? $opts['exclude'] : [$opts['exclude']])
+        : [],
+    isset($opts['e'])
+        ? (is_array($opts['e']) ? $opts['e'] : [$opts['e']])
+        : []
+);
+
 $files_and_directories = [];
 if ($rest_index > 0) {
     $rest = array_slice($argv, $rest_index);
     $files_and_directories += $rest;
 }
 
-Scan::filesAndDirectories($files_and_directories, function ($file_name) use ($max_length, $use_node_ids) {
+Scan::filesAndDirectories($files_and_directories, $exclude_files_and_directories, function ($file_name) use ($max_length, $use_node_ids) {
     if ('php' !== pathinfo($file_name, PATHINFO_EXTENSION)) {
         return;
     }

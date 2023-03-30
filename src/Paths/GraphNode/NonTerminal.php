@@ -58,16 +58,6 @@ class NonTerminal extends GraphNode
                 yield from $this->children[$i]->allPathsToTerminals($prefix);
             }
         }
-
-        /*
-        foreach ($this->children as $child) {
-            // Skip the node we just popped out of
-            if ($child === $previous_node) {
-                continue;
-            }
-            yield from $child->allPathsToTerminals($prefix);
-        }
-        */
     }
 
     /**

@@ -21,7 +21,7 @@ class GraphNodeVisitor extends KindVisitorImplementation
         $this->use_node_ids = $use_node_ids;
     }
 
-    public function newGraphNodeVisitorWithParent(GraphNode $parent = null)
+    public function newGraphNodeVisitorWithParent(GraphNode $parent = null): GraphNodeVisitor
     {
         return new GraphNodeVisitor($parent, $this->use_node_ids);
     }
